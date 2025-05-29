@@ -11,6 +11,15 @@ const frequentSitesContainer = document.getElementById('frequentSites');
 const searchTodoInput = document.getElementById('searchTodo');
 const sortTodoInput = document.getElementById('sortTodo');
 const toggleFavoritesBtn = document.getElementById('toggleFavorites');
+const italicBtn = document.getElementById('italicBtn');
+const underlineBtn = document.getElementById('underlineBtn');
+const strikeBtn = document.getElementById('strikeBtn');
+const fontColor = document.getElementById('fontColor');
+const bgColor = document.getElementById('bgColor');
+const alignLeftBtn = document.getElementById('alignLeftBtn');
+const alignCenterBtn = document.getElementById('alignCenterBtn');
+const alignRightBtn = document.getElementById('alignRightBtn');
+const clearFormatBtn = document.getElementById('clearFormatBtn');
 
 // State
 let isArchiveVisible = false;
@@ -90,7 +99,59 @@ boldBtn.addEventListener('click', () => {
 });
 
 fontSizeSelect.addEventListener('change', () => {
-    document.execCommand('fontSize', false, fontSizeSelect.value);
+    // Map px to execCommand size (always use 7, then set style)
+    document.execCommand('fontSize', false, '7');
+    // Find and style the new <font size="7"> tag
+    const editorSelection = window.getSelection();
+    if (editorSelection.rangeCount > 0) {
+        const range = editorSelection.getRangeAt(0);
+        let node = range.startContainer;
+        // Traverse up to find the font tag
+        while (node && node.nodeName !== 'FONT') {
+            node = node.parentNode;
+        }
+        if (node && node.nodeName === 'FONT') {
+            node.removeAttribute('size');
+            node.style.fontSize = fontSizeSelect.value + 'px';
+        }
+    }
+    saveEditorContent();
+});
+
+italicBtn.addEventListener('click', () => {
+    document.execCommand('italic', false, null);
+    saveEditorContent();
+});
+underlineBtn.addEventListener('click', () => {
+    document.execCommand('underline', false, null);
+    saveEditorContent();
+});
+strikeBtn.addEventListener('click', () => {
+    document.execCommand('strikeThrough', false, null);
+    saveEditorContent();
+});
+fontColor.addEventListener('input', () => {
+    document.execCommand('foreColor', false, fontColor.value);
+    saveEditorContent();
+});
+bgColor.addEventListener('input', () => {
+    document.execCommand('hiliteColor', false, bgColor.value);
+    saveEditorContent();
+});
+alignLeftBtn.addEventListener('click', () => {
+    document.execCommand('justifyLeft', false, null);
+    saveEditorContent();
+});
+alignCenterBtn.addEventListener('click', () => {
+    document.execCommand('justifyCenter', false, null);
+    saveEditorContent();
+});
+alignRightBtn.addEventListener('click', () => {
+    document.execCommand('justifyRight', false, null);
+    saveEditorContent();
+});
+clearFormatBtn.addEventListener('click', () => {
+    document.execCommand('removeFormat', false, null);
     saveEditorContent();
 });
 

@@ -11,14 +11,25 @@
         <!-- Top Banner (20%) -->
         <div class="banner-section">
             <div class="editor-toolbar">
-                <button id="boldBtn" title="Bold">B</button>
-                <select id="fontSize">
+                <button id="boldBtn" title="Bold"><b>B</b></button>
+                <button id="italicBtn" title="Italic"><i>I</i></button>
+                <button id="underlineBtn" title="Underline"><u>U</u></button>
+                <button id="strikeBtn" title="Strikethrough"><s>S</s></button>
+                <select id="fontSize" title="Font Size">
                     <option value="12">12px</option>
                     <option value="14">14px</option>
                     <option value="16">16px</option>
                     <option value="18">18px</option>
                     <option value="20">20px</option>
+                    <option value="24">24px</option>
+                    <option value="28">28px</option>
                 </select>
+                <input type="color" id="fontColor" title="Font Color">
+                <input type="color" id="bgColor" title="Background Color">
+                <button id="alignLeftBtn" title="Align Left">⯇</button>
+                <button id="alignCenterBtn" title="Align Center">≡</button>
+                <button id="alignRightBtn" title="Align Right">⯈</button>
+                <button id="clearFormatBtn" title="Clear Formatting">✖</button>
             </div>
             <div id="editor" contenteditable="true"></div>
         </div>
