@@ -281,7 +281,7 @@ function renderTodos() {
     sorted.forEach(todo => {
         const div = document.createElement('div');
         div.className = 'todo-item' + (todo.completed ? ' completed' : '');
-        div.style.borderColor = todo.color;
+        div.style.setProperty('--category-color', todo.color);
         div.setAttribute('data-id', todo.id);
         div.innerHTML = `
             <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
