@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Panel - Text Editor -->
+        <div class="panel left-panel">
+            <div class="editor-toolbar">
+                <button id="boldBtn" title="Bold">B</button>
+                <select id="fontSize">
+                    <option value="12">12px</option>
+                    <option value="14">14px</option>
+                    <option value="16">16px</option>
+                    <option value="18">18px</option>
+                    <option value="20">20px</option>
+                </select>
+            </div>
+            <div id="editor" contenteditable="true"></div>
+        </div>
+
+        <!-- Right Panel - Todo List -->
+        <div class="panel right-panel">
+            <div class="todo-header">
+                <h2>Todo List</h2>
+                <button id="archiveBtn">View Archive</button>
+            </div>
+            <div class="todo-input">
+                <input type="text" id="newTodo" placeholder="Add a new todo...">
+                <button id="addTodo">Add</button>
+            </div>
+            <div class="todo-list" id="activeTodos"></div>
+            <div class="todo-list archive" id="archivedTodos" style="display: none;"></div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="quick-links">
+            <h3>Quick Links</h3>
+            <div id="frequentSites"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
