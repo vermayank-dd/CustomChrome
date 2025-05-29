@@ -586,6 +586,7 @@ body {
     min-width: 0;
     overflow-y: auto;
     background: #fafbfc;
+    padding-left: 240px;
 }
 .quick-links-vertical {
     height: 100%;
