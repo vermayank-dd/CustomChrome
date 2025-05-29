@@ -284,17 +284,27 @@ function renderTodos() {
         div.style.setProperty('--category-color', todo.color);
         div.setAttribute('data-id', todo.id);
         div.innerHTML = `
-            <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
-            <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-            <span class="todo-text" contenteditable="false">${highlightMatch(capitalizeWords(todo.text), searchQuery)}</span>
-            <span class="category-badge" style="background:${todo.color}">${todo.category}</span>
-            ${todo.dueDate ? `<span class="due-date">${todo.dueDate}</span>` : ''}
-            ${todo.priority ? `<span class="priority priority-${todo.priority}">${todo.priority}</span>` : ''}
-            <button class="star-todo" title="Favorite">${todo.favorite ? '★' : '☆'}</button>
-            <button class="archive-todo">Archive</button>
-            <button class="delete-todo">×</button>
+            <div class="todo-main-row">
+                <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                <button class="star-todo" title="Favorite">${todo.favorite ? '★' : '☆'}</button>
+                <span class="todo-text" contenteditable="false">${highlightMatch(capitalizeWords(todo.text), searchQuery)}</span>
+                <span class="category-badge" style="background:${todo.color}">${todo.category}</span>
+            </div>
+            <div class="todo-tabs">
+                <span class="tab due-tab">${todo.dueDate ? todo.dueDate : '<span style=\'color:#bbb\'>Set Due</span>'}</span>
+                <span class="tab priority-tab priority-${todo.priority || 'none'}">${todo.priority ? capitalizeWords(todo.priority) : 'None'}</span>
+                <span class="tab archive-tab">Archive</span>
+                <span class="tab delete-tab">✕</span>
+            </div>
         `;
-        // Inline editing logic
+        // Star logic
+        div.querySelector('.star-todo').addEventListener('click', () => {
+            todo.favorite = !todo.favorite;
+            saveTodos();
+            renderTodos();
+        });
+        // Inline editing logic for todo text
         const textSpan = div.querySelector('.todo-text');
         textSpan.addEventListener('click', () => {
             textSpan.contentEditable = true;
@@ -312,25 +322,63 @@ function renderTodos() {
                 textSpan.blur();
             }
         });
-        // Event listeners
-        div.querySelector('.todo-checkbox').addEventListener('change', (e) => {
-            todo.completed = e.target.checked;
-            saveTodos();
-            renderTodos();
+        // Due date tab
+        div.querySelector('.due-tab').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const input = document.createElement('input');
+            input.type = 'date';
+            input.value = todo.dueDate || '';
+            input.style.margin = '0 8px';
+            input.addEventListener('blur', () => {
+                todo.dueDate = input.value || null;
+                saveTodos();
+                renderTodos();
+            });
+            input.addEventListener('change', () => {
+                todo.dueDate = input.value || null;
+                saveTodos();
+                renderTodos();
+            });
+            e.target.replaceWith(input);
+            input.focus();
         });
-        div.querySelector('.star-todo').addEventListener('click', () => {
-            todo.favorite = !todo.favorite;
-            saveTodos();
-            renderTodos();
+        // Priority tab
+        div.querySelector('.priority-tab').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const select = document.createElement('select');
+            select.innerHTML = `
+                <option value="none">None</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            `;
+            select.value = todo.priority || 'none';
+            select.style.margin = '0 8px';
+            select.style.borderRadius = '16px';
+            select.style.padding = '4px 12px';
+            select.addEventListener('blur', () => {
+                todo.priority = select.value !== 'none' ? select.value : null;
+                saveTodos();
+                renderTodos();
+            });
+            select.addEventListener('change', () => {
+                todo.priority = select.value !== 'none' ? select.value : null;
+                saveTodos();
+                renderTodos();
+            });
+            e.target.replaceWith(select);
+            select.focus();
         });
-        div.querySelector('.archive-todo').addEventListener('click', () => {
+        // Archive tab
+        div.querySelector('.archive-tab').addEventListener('click', () => {
             todos = todos.filter(t => t.id !== todo.id);
             archivedTodos.push(todo);
             saveTodos();
             renderTodos();
             renderArchivedTodos();
         });
-        div.querySelector('.delete-todo').addEventListener('click', () => {
+        // Delete tab
+        div.querySelector('.delete-tab').addEventListener('click', () => {
             todos = todos.filter(t => t.id !== todo.id);
             saveTodos();
             renderTodos();
