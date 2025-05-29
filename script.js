@@ -8,6 +8,7 @@ const activeTodosList = document.getElementById('activeTodos');
 const archivedTodosList = document.getElementById('archivedTodos');
 const archiveBtn = document.getElementById('archiveBtn');
 const frequentSitesContainer = document.getElementById('frequentSites');
+const searchTodoInput = document.getElementById('searchTodo');
 
 // State
 let isArchiveVisible = false;
@@ -35,6 +36,8 @@ let defaultCategory = 'Work';
 const customCategoryDropdown = document.getElementById('customCategoryDropdown');
 const selectedCategoryInput = document.getElementById('selectedCategory');
 const categoryDropdownList = document.getElementById('categoryDropdownList');
+
+let searchQuery = '';
 
 // Load saved data
 document.addEventListener('DOMContentLoaded', () => {
@@ -228,9 +231,25 @@ function addTodo() {
     renderTodos();
 }
 
+searchTodoInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value.trim().toLowerCase();
+    renderTodos();
+    renderArchivedTodos();
+});
+
+function highlightMatch(text, query) {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, 'ig');
+    return text.replace(regex, '<mark>$1</mark>');
+}
+
 function renderTodos() {
     activeTodosList.innerHTML = '';
-    todos.sort((a, b) => a.order - b.order).forEach(todo => {
+    let filtered = todos;
+    if (searchQuery) {
+        filtered = todos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
+    }
+    filtered.sort((a, b) => a.order - b.order).forEach(todo => {
         const div = document.createElement('div');
         div.className = 'todo-item' + (todo.completed ? ' completed' : '');
         div.style.borderColor = todo.color;
@@ -238,7 +257,7 @@ function renderTodos() {
         div.innerHTML = `
             <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
             <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-            <span class="todo-text" contenteditable="false">${capitalizeWords(todo.text)}</span>
+            <span class="todo-text" contenteditable="false">${highlightMatch(capitalizeWords(todo.text), searchQuery)}</span>
             <span class="category-badge" style="background:${todo.color}">${todo.category}</span>
             ${todo.dueDate ? `<span class="due-date">${todo.dueDate}</span>` : ''}
             ${todo.priority ? `<span class="priority priority-${todo.priority}">${todo.priority}</span>` : ''}
@@ -314,11 +333,15 @@ function renderTodos() {
 
 function renderArchivedTodos() {
     archivedTodosList.innerHTML = '';
-    archivedTodos.forEach(todo => {
+    let filtered = archivedTodos;
+    if (searchQuery) {
+        filtered = archivedTodos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
+    }
+    filtered.forEach(todo => {
         const div = document.createElement('div');
         div.className = 'todo-item completed';
         div.innerHTML = `
-            <span class="todo-text">${capitalizeWords(todo.text)}</span>
+            <span class="todo-text">${highlightMatch(capitalizeWords(todo.text), searchQuery)}</span>
             <span class="category-badge" style="background:${todo.color}">${todo.category}</span>
             ${todo.dueDate ? `<span class="due-date">${todo.dueDate}</span>` : ''}
             ${todo.priority ? `<span class="priority priority-${todo.priority}">${todo.priority}</span>` : ''}
