@@ -371,7 +371,10 @@ function renderTodos() {
         });
         // Archive tab
         div.querySelector('.archive-tab').addEventListener('click', () => {
+            // Set completedAt if not already set
+            if (!todo.completedAt) todo.completedAt = new Date().toISOString().slice(0, 10);
             todos = todos.filter(t => t.id !== todo.id);
+            todo.completed = true;
             archivedTodos.push(todo);
             saveTodos();
             renderTodos();
@@ -386,7 +389,8 @@ function renderTodos() {
         div.querySelector('.todo-checkbox').addEventListener('change', (e) => {
             todo.completed = e.target.checked;
             if (todo.completed) {
-                // Move to archive
+                // Move to archive and set completedAt
+                todo.completedAt = new Date().toISOString().slice(0, 10);
                 todos = todos.filter(t => t.id !== todo.id);
                 archivedTodos.push(todo);
                 saveTodos();
@@ -445,6 +449,7 @@ function renderArchivedTodos() {
             <div class="todo-tabs">
                 <span class="tab due-tab">${todo.dueDate ? todo.dueDate : '<span style=\'color:#bbb\'>Set Due</span>'}</span>
                 <span class="tab priority-tab priority-${todo.priority || 'none'}">${todo.priority ? capitalizeWords(todo.priority) : 'None'}</span>
+                ${todo.completedAt ? `<span class='tab completed-date-tab' style='background:#e0e0e0;color:#333;'>Completed on: ${todo.completedAt}</span>` : ''}
                 <span class="tab unarchive-tab">Unarchive</span>
                 <span class="tab delete-tab">✕</span>
             </div>
