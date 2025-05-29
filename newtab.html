@@ -31,6 +31,24 @@
             </div>
             <div class="todo-input">
                 <input type="text" id="newTodo" placeholder="Add a new todo...">
+                <select id="todoCategory">
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Errands">Errands</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Returns">Returns</option>
+                    <option value="custom">+ Add Category</option>
+                </select>
+                <input type="color" id="categoryColor" title="Pick category color" style="display:none; width:32px; height:32px; border:none; background:none;">
+                <input type="date" id="todoDueDate" title="Due date (optional)">
+                <select id="todoPriority">
+                    <option value="none">Priority</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <button id="starTodo" title="Favorite" style="font-size: 1.2em; background:none; border:none; cursor:pointer;">☆</button>
                 <button id="addTodo">Add</button>
             </div>
             <div class="todo-list" id="activeTodos"></div>
@@ -43,6 +61,7 @@
             <div id="frequentSites"></div>
         </div>
     </div>
+    <script src="Sortable.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html> 
