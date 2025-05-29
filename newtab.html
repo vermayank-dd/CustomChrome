@@ -28,6 +28,13 @@
             <div class="todo-header">
                 <h2>Todo List</h2>
                 <input type="text" id="searchTodo" placeholder="Search todos..." style="margin-left: 20px; flex: 1; max-width: 250px;">
+                <select id="sortTodo" style="margin-left: 10px; max-width: 150px;">
+                    <option value="order">Sort: Manual</option>
+                    <option value="due">Sort: Due Date</option>
+                    <option value="priority">Sort: Priority</option>
+                    <option value="category">Sort: Category</option>
+                    <option value="favorite">Sort: Favorites</option>
+                </select>
                 <button id="archiveBtn">View Archive</button>
             </div>
             <div class="todo-input">

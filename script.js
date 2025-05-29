@@ -9,6 +9,7 @@ const archivedTodosList = document.getElementById('archivedTodos');
 const archiveBtn = document.getElementById('archiveBtn');
 const frequentSitesContainer = document.getElementById('frequentSites');
 const searchTodoInput = document.getElementById('searchTodo');
+const sortTodoInput = document.getElementById('sortTodo');
 
 // State
 let isArchiveVisible = false;
@@ -38,6 +39,7 @@ const selectedCategoryInput = document.getElementById('selectedCategory');
 const categoryDropdownList = document.getElementById('categoryDropdownList');
 
 let searchQuery = '';
+let sortOption = 'order';
 
 // Load saved data
 document.addEventListener('DOMContentLoaded', () => {
@@ -243,13 +245,35 @@ function highlightMatch(text, query) {
     return text.replace(regex, '<mark>$1</mark>');
 }
 
+function sortTodos(arr) {
+    let sorted = [...arr];
+    if (sortOption === 'due') {
+        sorted.sort((a, b) => {
+            if (!a.dueDate) return 1;
+            if (!b.dueDate) return -1;
+            return new Date(a.dueDate) - new Date(b.dueDate);
+        });
+    } else if (sortOption === 'priority') {
+        const priorityOrder = { high: 1, medium: 2, low: 3, none: 4, null: 4, undefined: 4 };
+        sorted.sort((a, b) => (priorityOrder[a.priority] || 4) - (priorityOrder[b.priority] || 4));
+    } else if (sortOption === 'category') {
+        sorted.sort((a, b) => a.category.localeCompare(b.category));
+    } else if (sortOption === 'favorite') {
+        sorted.sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
+    } else {
+        sorted.sort((a, b) => a.order - b.order);
+    }
+    return sorted;
+}
+
 function renderTodos() {
     activeTodosList.innerHTML = '';
     let filtered = todos;
     if (searchQuery) {
         filtered = todos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
     }
-    filtered.sort((a, b) => a.order - b.order).forEach(todo => {
+    let sorted = sortTodos(filtered);
+    sorted.forEach(todo => {
         const div = document.createElement('div');
         div.className = 'todo-item' + (todo.completed ? ' completed' : '');
         div.style.borderColor = todo.color;
@@ -337,7 +361,8 @@ function renderArchivedTodos() {
     if (searchQuery) {
         filtered = archivedTodos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
     }
-    filtered.forEach(todo => {
+    let sorted = sortTodos(filtered);
+    sorted.forEach(todo => {
         const div = document.createElement('div');
         div.className = 'todo-item completed';
         div.innerHTML = `
@@ -398,4 +423,10 @@ function loadFrequentSites() {
             </a>
         `).join('');
     });
-} 
+}
+
+sortTodoInput.addEventListener('change', (e) => {
+    sortOption = e.target.value;
+    renderTodos();
+    renderArchivedTodos();
+}); 
