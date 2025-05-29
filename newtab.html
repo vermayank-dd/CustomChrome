@@ -22,47 +22,49 @@
             </div>
             <div id="editor" contenteditable="true"></div>
         </div>
-        <!-- Bottom Todo List (80%) -->
-        <div class="todo-section">
-            <div class="panel right-panel">
-                <div class="todo-header">
-                    <h2>Todo List</h2>
-                    <input type="text" id="searchTodo" placeholder="Search todos..." style="margin-left: 20px; flex: 1; max-width: 250px;">
-                    <select id="sortTodo" style="margin-left: 10px; max-width: 150px;">
-                        <option value="order">Sort: Manual</option>
-                        <option value="due">Sort: Due Date</option>
-                        <option value="priority">Sort: Priority</option>
-                        <option value="category">Sort: Category</option>
-                        <option value="favorite">Sort: Favorites</option>
-                    </select>
-                    <button id="toggleFavorites" style="margin-left: 10px;">Show Favorites</button>
-                    <button id="archiveBtn">View Archive</button>
-                </div>
-                <div class="todo-input">
-                    <input type="text" id="newTodo" placeholder="Add a new todo...">
-                    <div class="custom-category-dropdown" id="customCategoryDropdown">
-                        <input type="text" id="selectedCategory" readonly value="Work">
-                        <div class="dropdown-list" id="categoryDropdownList" style="display:none;"></div>
+        <!-- Main Content: Todo List + Quick Links Side by Side -->
+        <div class="main-content-row">
+            <div class="todo-section">
+                <div class="panel right-panel">
+                    <div class="todo-header">
+                        <h2>Todo List</h2>
+                        <input type="text" id="searchTodo" placeholder="Search todos..." style="margin-left: 20px; flex: 1; max-width: 250px;">
+                        <select id="sortTodo" style="margin-left: 10px; max-width: 150px;">
+                            <option value="order">Sort: Manual</option>
+                            <option value="due">Sort: Due Date</option>
+                            <option value="priority">Sort: Priority</option>
+                            <option value="category">Sort: Category</option>
+                            <option value="favorite">Sort: Favorites</option>
+                        </select>
+                        <button id="toggleFavorites" style="margin-left: 10px;">Show Favorites</button>
+                        <button id="archiveBtn">View Archive</button>
                     </div>
-                    <input type="color" id="categoryColor" title="Pick category color" style="display:none; width:32px; height:32px; border:none; background:none;">
-                    <input type="date" id="todoDueDate" title="Due date (optional)">
-                    <select id="todoPriority">
-                        <option value="none">Priority</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                    <button id="starTodo" title="Favorite" style="font-size: 1.2em; background:none; border:none; cursor:pointer;">☆</button>
-                    <button id="addTodo">Add</button>
+                    <div class="todo-input">
+                        <input type="text" id="newTodo" placeholder="Add a new todo...">
+                        <div class="custom-category-dropdown" id="customCategoryDropdown">
+                            <input type="text" id="selectedCategory" readonly value="Work">
+                            <div class="dropdown-list" id="categoryDropdownList" style="display:none;"></div>
+                        </div>
+                        <input type="color" id="categoryColor" title="Pick category color" style="display:none; width:32px; height:32px; border:none; background:none;">
+                        <input type="date" id="todoDueDate" title="Due date (optional)">
+                        <select id="todoPriority">
+                            <option value="none">Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                        <button id="starTodo" title="Favorite" style="font-size: 1.2em; background:none; border:none; cursor:pointer;">☆</button>
+                        <button id="addTodo">Add</button>
+                    </div>
+                    <div class="todo-list" id="activeTodos"></div>
+                    <div class="todo-list archive" id="archivedTodos" style="display: none;"></div>
                 </div>
-                <div class="todo-list" id="activeTodos"></div>
-                <div class="todo-list archive" id="archivedTodos" style="display: none;"></div>
             </div>
-        </div>
-        <!-- Quick Links Section (remains at bottom if needed) -->
-        <div class="quick-links">
-            <h3>Quick Links</h3>
-            <div id="frequentSites"></div>
+            <!-- Quick Links Vertical Menu -->
+            <div class="quick-links-vertical">
+                <h3>Quick Links</h3>
+                <div id="frequentSites"></div>
+            </div>
         </div>
     </div>
     <script src="Sortable.min.js"></script>
