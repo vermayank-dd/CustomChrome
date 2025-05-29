@@ -383,6 +383,20 @@ function renderTodos() {
             saveTodos();
             renderTodos();
         });
+        div.querySelector('.todo-checkbox').addEventListener('change', (e) => {
+            todo.completed = e.target.checked;
+            if (todo.completed) {
+                // Move to archive
+                todos = todos.filter(t => t.id !== todo.id);
+                archivedTodos.push(todo);
+                saveTodos();
+                renderTodos();
+                renderArchivedTodos();
+            } else {
+                saveTodos();
+                renderTodos();
+            }
+        });
         activeTodosList.appendChild(div);
     });
     // Initialize SortableJS after rendering
@@ -414,35 +428,44 @@ function renderArchivedTodos() {
     if (searchQuery) {
         filtered = archivedTodos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
     }
-    if (showFavoritesOnly) {
-        filtered = filtered.filter(todo => todo.favorite);
-    }
     let sorted = sortTodos(filtered);
     sorted.forEach(todo => {
         const div = document.createElement('div');
         div.className = 'todo-item completed';
+        div.style.setProperty('--category-color', todo.color);
+        div.setAttribute('data-id', todo.id);
         div.innerHTML = `
-            <span class="todo-text">${highlightMatch(capitalizeWords(todo.text), searchQuery)}</span>
-            <span class="category-badge" style="background:${todo.color}">${todo.category}</span>
-            ${todo.dueDate ? `<span class="due-date">${todo.dueDate}</span>` : ''}
-            ${todo.priority ? `<span class="priority priority-${todo.priority}">${todo.priority}</span>` : ''}
-            <button class="star-todo" title="Favorite">${todo.favorite ? '★' : '☆'}</button>
-            <button class="unarchive-todo">Unarchive</button>
-            <button class="delete-todo">×</button>
+            <div class="todo-main-row">
+                <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                <input type="checkbox" class="todo-checkbox" checked disabled>
+                <button class="star-todo" title="Favorite">${todo.favorite ? '★' : '☆'}</button>
+                <span class="todo-text">${highlightMatch(capitalizeWords(todo.text), searchQuery)}</span>
+                <span class="category-badge" style="background:${todo.color}">${todo.category}</span>
+            </div>
+            <div class="todo-tabs">
+                <span class="tab due-tab">${todo.dueDate ? todo.dueDate : '<span style=\'color:#bbb\'>Set Due</span>'}</span>
+                <span class="tab priority-tab priority-${todo.priority || 'none'}">${todo.priority ? capitalizeWords(todo.priority) : 'None'}</span>
+                <span class="tab unarchive-tab">Unarchive</span>
+                <span class="tab delete-tab">✕</span>
+            </div>
         `;
+        // Star logic
         div.querySelector('.star-todo').addEventListener('click', () => {
             todo.favorite = !todo.favorite;
             saveTodos();
             renderArchivedTodos();
         });
-        div.querySelector('.unarchive-todo').addEventListener('click', () => {
+        // Unarchive tab
+        div.querySelector('.unarchive-tab').addEventListener('click', () => {
             archivedTodos = archivedTodos.filter(t => t.id !== todo.id);
+            todo.completed = false;
             todos.push(todo);
             saveTodos();
             renderTodos();
             renderArchivedTodos();
         });
-        div.querySelector('.delete-todo').addEventListener('click', () => {
+        // Delete tab
+        div.querySelector('.delete-tab').addEventListener('click', () => {
             archivedTodos = archivedTodos.filter(t => t.id !== todo.id);
             saveTodos();
             renderArchivedTodos();
