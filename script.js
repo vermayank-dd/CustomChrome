@@ -25,13 +25,16 @@ let categories = [
 ];
 
 // --- DOM Elements for new fields ---
-const todoCategory = document.getElementById('todoCategory');
-const categoryColor = document.getElementById('categoryColor');
 const todoDueDate = document.getElementById('todoDueDate');
 const todoPriority = document.getElementById('todoPriority');
 const starTodo = document.getElementById('starTodo');
 
 let isStarred = false;
+let defaultCategory = 'Work';
+
+const customCategoryDropdown = document.getElementById('customCategoryDropdown');
+const selectedCategoryInput = document.getElementById('selectedCategory');
+const categoryDropdownList = document.getElementById('categoryDropdownList');
 
 // Load saved data
 document.addEventListener('DOMContentLoaded', () => {
@@ -56,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTodos();
         }
     });
+    loadDefaultCategory();
 });
 
 // Text Editor Functions
@@ -84,28 +88,16 @@ fontSizeSelect.addEventListener('change', () => {
 });
 
 // --- Category logic ---
-todoCategory.addEventListener('change', (e) => {
-    if (e.target.value === 'custom') {
-        const customName = prompt('Enter new category name:');
-        if (customName) {
-            // Show color picker
-            categoryColor.style.display = 'inline-block';
-            categoryColor.value = '#888888';
-            todoCategory.insertBefore(new Option(customName, customName, true, true), todoCategory.lastElementChild);
-            categories.push({ name: customName, color: categoryColor.value });
-        } else {
-            todoCategory.value = 'Work';
-            categoryColor.style.display = 'none';
-        }
-    } else {
-        categoryColor.style.display = 'none';
-    }
-});
+// (No longer needed)
 
+// categoryColor logic for custom dropdown
 categoryColor.addEventListener('input', (e) => {
-    const customName = todoCategory.value;
+    const customName = selectedCategoryInput.value;
     const cat = categories.find(c => c.name === customName);
     if (cat) cat.color = e.target.value;
+    saveTodos();
+    renderCategoryDropdown();
+    renderTodos();
 });
 
 starTodo.addEventListener('click', () => {
@@ -129,16 +121,7 @@ function loadTodos() {
         if (result.categories) categories = result.categories;
         renderTodos();
         renderArchivedTodos();
-        renderCategoryOptions();
-    });
-}
-
-function renderCategoryOptions() {
-    // Remove all except last (custom)
-    while (todoCategory.options.length > 1) todoCategory.remove(0);
-    categories.forEach(cat => {
-        const opt = new Option(cat.name, cat.name);
-        todoCategory.add(opt, todoCategory.options.length - 1);
+        renderCategoryDropdown();
     });
 }
 
@@ -146,13 +129,77 @@ function capitalizeWords(str) {
     return str.replace(/\b\w/g, c => c.toUpperCase());
 }
 
+function saveDefaultCategory(cat) {
+    defaultCategory = cat;
+    chrome.storage.local.set({ defaultCategory: cat });
+}
+
+function loadDefaultCategory() {
+    chrome.storage.local.get(['defaultCategory'], (result) => {
+        if (result.defaultCategory) {
+            defaultCategory = result.defaultCategory;
+        }
+        selectedCategoryInput.value = defaultCategory;
+    });
+}
+
+function renderCategoryDropdown() {
+    categoryDropdownList.innerHTML = '';
+    categories.forEach(cat => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-category-item';
+        item.innerHTML = `
+            <span><span class="color-dot" style="background:${cat.color}"></span>${cat.name}</span>
+            <button class="def-btn${cat.name === defaultCategory ? ' selected' : ''}">def</button>
+        `;
+        item.querySelector('.def-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            saveDefaultCategory(cat.name);
+            selectedCategoryInput.value = cat.name;
+            renderCategoryDropdown();
+        });
+        item.addEventListener('click', () => {
+            selectedCategoryInput.value = cat.name;
+            categoryDropdownList.style.display = 'none';
+        });
+        categoryDropdownList.appendChild(item);
+    });
+    // Add custom option
+    const customItem = document.createElement('div');
+    customItem.className = 'dropdown-category-item';
+    customItem.innerHTML = '<span>+ Add Category</span>';
+    customItem.addEventListener('click', () => {
+        const customName = prompt('Enter new category name:');
+        if (customName) {
+            const color = '#888888';
+            categories.push({ name: customName, color });
+            saveTodos();
+            renderCategoryDropdown();
+            selectedCategoryInput.value = customName;
+            categoryColor.style.display = 'inline-block';
+            categoryColor.value = color;
+        }
+    });
+    categoryDropdownList.appendChild(customItem);
+}
+
+selectedCategoryInput.addEventListener('click', () => {
+    categoryDropdownList.style.display = categoryDropdownList.style.display === 'none' ? 'block' : 'none';
+    renderCategoryDropdown();
+});
+document.addEventListener('click', (e) => {
+    if (!customCategoryDropdown.contains(e.target)) {
+        categoryDropdownList.style.display = 'none';
+    }
+});
+
+// Update addTodo to use selectedCategoryInput.value
 function addTodo() {
     const text = newTodoInput.value.trim();
     if (!text) return;
-    let category = todoCategory.value;
+    let category = selectedCategoryInput.value;
     let catColor = (categories.find(c => c.name === category) || { color: '#888' }).color;
-    if (category === 'custom') {
-        // Should not allow adding with 'custom' as category
+    if (!category) {
         alert('Please select or create a valid category.');
         return;
     }
@@ -173,7 +220,7 @@ function addTodo() {
     newTodoInput.value = '';
     todoDueDate.value = '';
     todoPriority.value = 'none';
-    todoCategory.value = 'Work';
+    selectedCategoryInput.value = defaultCategory;
     isStarred = false;
     starTodo.textContent = '☆';
     categoryColor.style.display = 'none';

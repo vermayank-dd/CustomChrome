@@ -31,15 +31,10 @@
             </div>
             <div class="todo-input">
                 <input type="text" id="newTodo" placeholder="Add a new todo...">
-                <select id="todoCategory">
-                    <option value="Work">Work</option>
-                    <option value="Personal">Personal</option>
-                    <option value="Errands">Errands</option>
-                    <option value="Kids">Kids</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Returns">Returns</option>
-                    <option value="custom">+ Add Category</option>
-                </select>
+                <div class="custom-category-dropdown" id="customCategoryDropdown">
+                    <input type="text" id="selectedCategory" readonly value="Work">
+                    <div class="dropdown-list" id="categoryDropdownList" style="display:none;"></div>
+                </div>
                 <input type="color" id="categoryColor" title="Pick category color" style="display:none; width:32px; height:32px; border:none; background:none;">
                 <input type="date" id="todoDueDate" title="Due date (optional)">
                 <select id="todoPriority">
