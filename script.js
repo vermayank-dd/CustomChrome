@@ -10,9 +10,11 @@ const archiveBtn = document.getElementById('archiveBtn');
 const frequentSitesContainer = document.getElementById('frequentSites');
 const searchTodoInput = document.getElementById('searchTodo');
 const sortTodoInput = document.getElementById('sortTodo');
+const toggleFavoritesBtn = document.getElementById('toggleFavorites');
 
 // State
 let isArchiveVisible = false;
+let showFavoritesOnly = false;
 
 // --- Todo Model and State ---
 let todos = [];
@@ -272,6 +274,9 @@ function renderTodos() {
     if (searchQuery) {
         filtered = todos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
     }
+    if (showFavoritesOnly) {
+        filtered = filtered.filter(todo => todo.favorite);
+    }
     let sorted = sortTodos(filtered);
     sorted.forEach(todo => {
         const div = document.createElement('div');
@@ -361,6 +366,9 @@ function renderArchivedTodos() {
     if (searchQuery) {
         filtered = archivedTodos.filter(todo => todo.text.toLowerCase().includes(searchQuery));
     }
+    if (showFavoritesOnly) {
+        filtered = filtered.filter(todo => todo.favorite);
+    }
     let sorted = sortTodos(filtered);
     sorted.forEach(todo => {
         const div = document.createElement('div');
@@ -427,6 +435,13 @@ function loadFrequentSites() {
 
 sortTodoInput.addEventListener('change', (e) => {
     sortOption = e.target.value;
+    renderTodos();
+    renderArchivedTodos();
+});
+
+toggleFavoritesBtn.addEventListener('click', () => {
+    showFavoritesOnly = !showFavoritesOnly;
+    toggleFavoritesBtn.textContent = showFavoritesOnly ? 'Show All' : 'Show Favorites';
     renderTodos();
     renderArchivedTodos();
 }); 
