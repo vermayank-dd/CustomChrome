@@ -474,7 +474,7 @@ function loadFrequentSites() {
         const topSites = sites.slice(0, 8); // Get top 8 sites
         frequentSitesContainer.innerHTML = topSites.map(site => `
             <a href="${site.url}" class="site-link" target="_blank">
-                <img src="chrome://favicon/${site.url}" alt="${site.title}">
+                <img src="https://www.google.com/s2/favicons?domain=${(new URL(site.url)).hostname}" alt="${site.title}">
                 <span>${site.title}</span>
             </a>
         `).join('');
